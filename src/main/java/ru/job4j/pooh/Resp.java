@@ -5,6 +5,7 @@ public class Resp {
     private final String status;
     public static final String SUCCESS = "200";
     public static final String NO_DATA = "204";
+    public static final String NOT_IMPLEMENTED = "501";
 
     public Resp(String text, String status) {
         this.text = text;

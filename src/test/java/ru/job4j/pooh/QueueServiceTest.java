@@ -47,4 +47,14 @@ public class QueueServiceTest {
         assertThat(result2.status(), is(Resp.SUCCESS));
         assertThat(result3.status(), is(Resp.NO_DATA));
     }
+
+    @Test
+    public void whenNotImplemented() {
+        QueueService queueService = new QueueService();
+        Resp result = queueService.process(
+                new Req("PO", "queue", "weather", "temperature=18")
+        );
+        assertThat(result.text(), is(""));
+        assertThat(result.status(), is(Resp.NOT_IMPLEMENTED));
+    }
 }

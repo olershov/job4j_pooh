@@ -115,6 +115,15 @@ public class TopicServiceTest {
         );
         assertThat(result.text(), is(""));
         assertThat(result.status(), is(Resp.NO_DATA));
+    }
 
+    @Test
+    public void whenNotImplemented() {
+        TopicService topicService = new TopicService();
+        Resp result = topicService.process(
+                new Req("GE", "topic", "weather", "client1")
+        );
+        assertThat(result.text(), is(""));
+        assertThat(result.status(), is(Resp.NOT_IMPLEMENTED));
     }
 }

@@ -22,8 +22,7 @@ public class Req {
         String poohMode = splitContent[1];
         String sourceName = splitContent[2].split(" ")[0];
         String param = "";
-        if ((!GET.equals(requestType) && !POST.equals(requestType))
-                || (!"topic".equals(poohMode) && !"queue".equals(poohMode))) {
+        if (!"topic".equals(poohMode) && !"queue".equals(poohMode)) {
             throw new IllegalArgumentException("The request is invalid");
         }
         if (requestType.equals(POST)) {

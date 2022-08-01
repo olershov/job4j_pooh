@@ -4,30 +4,25 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class TopicService implements Service {
-    private final ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentLinkedQueue<Resp>>> topics =
+    private final ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> topics =
             new ConcurrentHashMap<>();
 
     @Override
     public Resp process(Req req) {
-        Resp result;
+        Resp result = new Resp("", Resp.NOT_IMPLEMENTED);
         if (Req.POST.equals(req.httpRequestType())) {
             result = new Resp(req.getParam(), Resp.SUCCESS);
-            ConcurrentHashMap<String, ConcurrentLinkedQueue<Resp>> recipients = topics.get(req.getSourceName());
+            ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> recipients = topics.get(req.getSourceName());
             if (recipients != null) {
-                for (String key : recipients.keySet()) {
-                    recipients.get(key).add(result);
+                for (ConcurrentLinkedQueue<String> value : recipients.values()) {
+                    value.add(result.text());
                 }
             }
-        } else {
+        } else if (Req.GET.equals(req.httpRequestType())) {
             topics.putIfAbsent(req.getSourceName(), new ConcurrentHashMap<>());
-            if (topics.get(req.getSourceName()).putIfAbsent(req.getParam(), new ConcurrentLinkedQueue<>()) == null) {
-                result = new Resp("", Resp.NO_DATA);
-            } else {
-                result = topics.get(req.getSourceName()).get(req.getParam()).poll();
-                if (result == null) {
-                    result = new Resp("", Resp.NO_DATA);
-                }
-            }
+            topics.get(req.getSourceName()).putIfAbsent(req.getParam(), new ConcurrentLinkedQueue<>());
+            String text = topics.get(req.getSourceName()).get(req.getParam()).poll();
+            result = text == null ? new Resp("", Resp.NO_DATA) : new Resp(text, Resp.SUCCESS);
         }
         return result;
     }
